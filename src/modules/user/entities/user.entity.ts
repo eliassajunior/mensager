@@ -11,6 +11,8 @@ export class User {
   email: string;
   @Column({ type: "varchar" })
   password: string;
+  @Column({ type: "varchar", nullable: true })
+  refreshToken: string;
 
   @CreateDateColumn()
   createdAt: Date;

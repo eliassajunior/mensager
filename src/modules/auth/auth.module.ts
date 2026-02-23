@@ -15,7 +15,7 @@ import { authConfig } from "./configs/auth.config";
       inject: [authConfig.KEY],
       useFactory: async (config: ConfigType<typeof authConfig>) => {
         return {
-          secret: config.secret,
+          secret: config.accessSecret,
           signOptions: {
             expiresIn: config.expiresIn,
             audience: config.audience,
@@ -27,5 +27,6 @@ import { authConfig } from "./configs/auth.config";
   ],
   controllers: [AuthController],
   providers: [AuthService],
+  exports: [JwtModule],
 })
 export class AuthModule {}
