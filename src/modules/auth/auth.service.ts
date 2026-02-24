@@ -34,7 +34,7 @@ export class AuthService {
     return tokens;
   }
 
-  async regenerateTokens(refreshToken: string) {
+  async refresh(refreshToken: string) {
     const payload: UserPayload = await this.verifyToken(refreshToken);
 
     const user = await this.userRepository.findOne({ where: { id: payload.sub } });

@@ -1,4 +1,5 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Message } from "src/modules/message/entities/message.entity";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 @Entity({ name: "users" })
 export class User {
@@ -13,6 +14,11 @@ export class User {
   password: string;
   @Column({ type: "varchar", nullable: true })
   refreshToken: string;
+
+  @OneToMany(() => Message, (message) => message.from)
+  messagesFrom: Message[];
+  @OneToMany(() => Message, (message) => message.to)
+  messagesTo: Message[];
 
   @CreateDateColumn()
   createdAt: Date;

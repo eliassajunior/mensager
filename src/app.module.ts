@@ -7,6 +7,7 @@ import { globalSchema } from "./global/configs/schemas/global.schema";
 import { AuthModule } from "./modules/auth/auth.module";
 import { authConfig } from "./modules/auth/configs/auth.config";
 import { authSchema } from "./modules/auth/configs/schemas/auth.schema";
+import { MessageModule } from "./modules/message/message.module";
 import { UserModule } from "./modules/user/user.module";
 
 @Module({
@@ -36,6 +37,7 @@ import { UserModule } from "./modules/user/user.module";
     }),
     UserModule,
     AuthModule,
+    MessageModule,
   ],
 })
 export class AppModule {}
