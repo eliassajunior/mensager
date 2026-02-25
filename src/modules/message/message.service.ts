@@ -56,6 +56,26 @@ export class MessageService {
     return { message: "Mensagem atualizada com sucesso!" };
   }
 
+  async remove(userId: string, id: string): Promise<ReplyMessage> {
+    const message = await this.messageRepository.findOne({
+      where: {
+        id: id,
+        from: { id: userId },
+      },
+    });
+    if (!message) {
+      throw new NotFoundException("Mensagem não encontrada.");
+    }
+
+    if (message.read) {
+      return { message: "Mensagem já foi lida, não é possível remover a mensagem." };
+    }
+
+    await this.messageRepository.remove(message);
+
+    return { message: "Mensagem removida com sucesso!" };
+  }
+
   async markMessageAsRead(userId: string, id: string): Promise<ReplyMessage> {
     const message = await this.messageRepository.findOne({
       where: {
