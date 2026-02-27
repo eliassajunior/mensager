@@ -6,6 +6,7 @@ import { User } from "../user/entities/user.entity";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 import { authConfig } from "./configs/auth.config";
+import { HashService } from "./hash/hash.service";
 
 @Global()
 @Module({
@@ -26,7 +27,7 @@ import { authConfig } from "./configs/auth.config";
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService],
-  exports: [JwtModule],
+  providers: [AuthService, HashService],
+  exports: [JwtModule, HashService],
 })
 export class AuthModule {}

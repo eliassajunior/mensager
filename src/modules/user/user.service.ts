@@ -1,8 +1,8 @@
-import { ForbiddenException, Injectable, NotFoundException } from "@nestjs/common";
+import { ConflictException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import * as bcrypt from "bcrypt";
 import { ReplyMessage } from "src/global/types/reply-message.type";
 import { Repository } from "typeorm";
+import { HashService } from "../auth/hash/hash.service";
 import { CreateUserDto } from "./dtos/create-user.dto";
 import { UpdateUserDto } from "./dtos/update-user.dto";
 import { User } from "./entities/user.entity";
@@ -12,6 +12,7 @@ export class UserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly hashService: HashService,
   ) {}
 
   async findAll(): Promise<User[]> {
@@ -87,29 +88,25 @@ export class UserService {
   }
 
   async create(data: CreateUserDto): Promise<ReplyMessage> {
-    const user = await this.userRepository.findOneBy({ email: data.email });
-    if (user) {
-      throw new ForbiddenException("O e-mail já está em uso.");
+    try {
+      const newUser = this.userRepository.create({
+        name: data.name,
+        email: data.email,
+        password: await this.hashService.hash(data.password),
+      });
+      await this.userRepository.save(newUser);
+
+      return { message: "Usuário criado com sucesso!" };
+    } catch {
+      throw new ConflictException("E-mail já cadastrado.");
     }
-
-    const hash = await bcrypt.hash(data.password, await bcrypt.genSalt());
-
-    const newUser = this.userRepository.create({
-      name: data.name,
-      email: data.email,
-      password: hash,
-    });
-
-    await this.userRepository.save(newUser);
-
-    return { message: "Usuário criado com sucesso!" };
   }
 
   async update(userId: string, data: UpdateUserDto): Promise<ReplyMessage> {
     const user = await this.findOne(userId);
 
     const name = data.name ? data.name : user.name;
-    const password = data.password ? await bcrypt.hash(data.password, await bcrypt.genSalt()) : user.password;
+    const password = data.password ? await this.hashService.hash(data.password) : user.password;
 
     await this.userRepository.update(userId, {
       name: name,
